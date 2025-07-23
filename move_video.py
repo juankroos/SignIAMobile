@@ -40,7 +40,7 @@ def move_mp4_to_parent(root_dir):
                             i += 1
                         dest_path = os.path.join(main_folder_path, f"{base}_{i}{ext}")
 
-                    # Déplacer le fichier
+                    # Déplacer le fichier   
                     try:
                         shutil.move(src_path, dest_path)
                         print(f"Déplacé : {src_path} -> {dest_path}")
