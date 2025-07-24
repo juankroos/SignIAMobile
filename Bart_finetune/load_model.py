@@ -1,7 +1,9 @@
+import torchvision
+from Bart_finetune.Finetuning import MAX_ENCODER_SEQUENCE_LENGTH, MAX_GENERATION_LENGTH
 from Model_video import Extractor
 ### function to load the model
 # load the best model one for inference
-model = model.load_state_dict(torch.load('best_bart_model.pt'))
+model = model.load_state_dict(torchvision.load('best_bart_model.pt'))
 model.eval()
 
 #text comming from the video model inference
