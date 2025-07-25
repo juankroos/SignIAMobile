@@ -19,6 +19,7 @@ def mediapipe_detection(image, model):
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     return image, results
 
+
 # --- Fonction : affichage des landmarks
 def draw_styled_landmarks(image, results):
     if results.pose_landmarks:
