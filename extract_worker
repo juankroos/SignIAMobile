@@ -1,0 +1,42 @@
+class ExtractWorker:
+    def __init__(self, model):
+        self.model = model
+
+    def extract(self, results):
+        return extract_keypoints(results)
+    
+    
+def extract_keypoints(results):
+    # Initialize arrays
+    pose = np.zeros(33 * 3)  # Only store shoulders (11, 12), others zero
+    lh = np.zeros(21 * 3)
+    rh = np.zeros(21 * 3)
+
+    # Extract shoulders (landmarks 11 and 12)
+    if results.pose_landmarks:
+        pose_3d = np.array([[res.x, res.y, res.z] for res in results.pose_landmarks.landmark])
+        pose = np.zeros(33 * 3)
+        pose[11 * 3:12 * 3] = pose_3d[11, :].flatten()  # Left shoulder
+        pose[12 * 3:13 * 3] = pose_3d[12, :].flatten()  # Right shoulder
+
+    # Extract hands
+    if results.left_hand_landmarks:
+        lh = np.array([[res.x, res.y, res.z] for res in results.left_hand_landmarks.landmark]).flatten()
+    if results.right_hand_landmarks:
+        rh = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]).flatten()
+
+    # Reference point for normalization (pose landmark 0 or average of shoulders)
+    ref_point = np.array([results.pose_landmarks.landmark[0].x, results.pose_landmarks.landmark[0].y,
+                          results.pose_landmarks.landmark[0].z]) if results.pose_landmarks else np.zeros(3)
+
+    # Normalize
+    pose_3d = pose.reshape(-1, 3)
+    lh_3d = lh.reshape(-1, 3)
+    rh_3d = rh.reshape(-1, 3)
+
+    pose_3d = normalize_landmarks(pose_3d, ref_point)
+    lh_3d = normalize_landmarks(lh_3d, ref_point)
+    rh_3d = normalize_landmarks(rh_3d, ref_point)
+
+    return np.concatenate([pose_3d.flatten(), lh_3d.flatten(), rh_3d.flatten()])  # 132 dimensions
+
